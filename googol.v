@@ -34,7 +34,7 @@ Fixpoint pent (m : nat) (n : nat) : nat :=
  | S n' => tetr m (pent m n')
  end.
 
-Fixpoint hype' (f : nat -> nat -> nat -> nat) (m : nat) (n : nat) (o : nat) : nat :=
+Fixpoint hype' (f : nat -> nat ) (m : nat) (n : nat) (o : nat) : nat :=
  match n with
  | Z =>
   match o with
@@ -45,29 +45,11 @@ Fixpoint hype' (f : nat -> nat -> nat -> nat) (m : nat) (n : nat) (o : nat) : na
    | S o'' => S Z
    end
   end
- | S n' => f m (hype' f m n' o) o
+ | S n' => f (hype' f m n' o)
  end.
 
-Fixpoint hype (m : nat) (n : nat) (o : nat) : nat :=
+Fixpoint hype (m : nat) (n : nat) (o : nat) :=
  match o with
  | Z => S n
- | S o' => (fix hype' (n_ : nat) : nat :=
-  match n_ with
-  | Z =>
-   match o' with
-   | Z => m
-   | S o'' =>
-    match o'' with
-    | Z => Z
-    | S o''' => S Z
-    end
-   end
-  | S n_' => hype m (hype' n_') o'
-  end) n
- end.
-
-Fixpoint hyper (m : nat) (n : nat) (o : nat) :=
- match o with
- | Z => S n
- | S o' => hyper m (hype' hype m n o') o'
+ | S o' => hype' (fun x => hype m x o') m n o'
  end.

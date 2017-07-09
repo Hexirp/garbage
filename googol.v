@@ -48,8 +48,20 @@ Fixpoint hype' (f : nat -> nat ) (m : nat) (n : nat) (o : nat) : nat :=
  | S n' => f (hype' f m n' o)
  end.
 
-Fixpoint hype (m : nat) (n : nat) (o : nat) :=
+Fixpoint hype (m : nat) (n : nat) (o : nat) : nat :=
  match o with
  | Z => S n
  | S o' => hype' (fun x => hype m x o') m n o'
+ end.
+
+Axiom tyre' : (nat -> nat) -> nat -> nat -> nat -> nat -> nat.
+
+Fixpoint tyre (m : nat) (n : nat) (o : nat) (p : nat) : nat :=
+ match p with
+ | Z =>
+  match o with
+  | Z => S n
+  | S o' => hype' (fun x => hype m x o') m n o'
+  end
+ | S p' => tyre' (fun x => tyre m n x p') m n o p'
  end.

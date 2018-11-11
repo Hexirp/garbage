@@ -1,0 +1,10 @@
+* Function, Void, Magma
++ Fuctor, Monad
++ Applicative
++ Comonad
++ Apply, Bind
++ Extend, Extract
++ Pointed, Copointed
++ Identity
++ Tuple, Singletype, Wrapper, Unwrapper
++ SemiGroupoid, Category, Arrow

@@ -1,0 +1,121 @@
+﻿役に立つ言語拡張: RebindableSyntax
+型クラス継承関係: 古い。
+ Magma -> (SemiGroup, EmptyGroup, AbelianMagma, QuasiGroup)
+ (SemiGroup, EmptyGroup) -> Monoid
+ (QuasiGroup, EmptyGroup) -> Loop
+ (QuasiGroup, SemiGroup, EmptyGroup) -> Group
+ (QuasiGroup, SemiGroup, EmptyGroup, AbelianMagma) -> AbelianGroup
+
+ Functor -> Apply
+ Apply -> (Bind, Applicative, Extend, Extract)
+ (Bind, Applicative) -> Monad
+ (Extend, Extract) -> Comonad
+
+するべき:
+  モジュールのDocumentを文字列で返す関数を簡単に作れるモジュール
+  群論の調べ直し、特にQuassi関係。可除性、可逆性、消約則など。Num、Enumを群論の系列で定義したい。
+  Monad則などのテスト関数。テストライブラリ。
+
+研究:
+  CoApplicativeは時々ContravariantApplicativeの意味で使われることも...
+
+  ContravariantApplicative = ContravariantFunctorもろもろを継承して、f a -> f b -> f (a -> b)が定義できる。 <- Divideというらしい？
+
+  class ContFunctor where
+    contfmap :: (a -> b) -> f b -> f a
+
+  class ContApplicative where
+    contfapp :: f (a -> b) -> f b -> f a
+
+  元の奴とContでもあるやつをInvariantというらしい？
+
+  Contravarian -> Cont, Contraと略す
+
+  (追記)上は取り消し。上で書かれたContApplicativeは思ったより違う。Divideという単語の名前がある。
+
+  class Contravariant f => Divisible f where
+    divide  :: (a -> (b, c)) -> f b -> f c -> f a
+    conquer :: f a
+
+  divideの型をちょっと変形すると(a -> (b, c)) -> ((f b, f c) -> f a)となる。これが実のところなのだろう。Alternativeに拡張したバージョンも。
+
+  class Divisible f => Decidable f where
+    choose :: (a -> Either b c) -> f b -> f c -> f a
+    lose :: (a -> Void) -> f a
+----
+
+  FlexibleInstances, UndecidableInstances, IncoherentInstancesを使用すると次のようなプログラムが書ける。
+
+  instance (Monad m) => Functor m where
+    fmap f m = m >>= (return . f)
+
+  instance (Monad m) => Applicative m where
+    pure = return
+    f <*> a = do
+      x <- f
+      y <- a
+      return (f $ a)
+
+  Monadだけを描いたら自動的にインスタンス作ってくれるとか便利すぎ。
+
+----
+
+  Applicativeを次のように書いている人がいた。なぜだろうか？
+
+  class (Functor f) => Applicative f where
+    pure :: a -> f a
+    zip :: (f a, f b) -> f (a, b)
+
+  んで、CoApplicativeはこう。
+
+  class (Functor f) => Coapplicative f where
+    copure :: f a -> a
+    cozip :: f (Either a b) -> Either (f a) (f b)
+
+  かなり重要な情報なのか？
+
+  普通のfappもこの定義から作れる。 fapp f a = uncurry ($) <$> zip (f, a)
+
+  逆にzipもfappから作れる。 zip (x, y) = (,) <$> x <*> y
+
+  これが本当だとしたらかなり衝撃的だ。
+
+  もう一つの資料はHaskellにおいてfappに対応するcofappは作れないとしているっぽい？cozipに対応するものが思い浮かばないので本当っぽい
+
+----
+
+  scalazにContravariantとFunctorに共通する上位クラスがあったから調べてみると、名前はInvariantFunctorで、xfmap :: (a -> b) -> (b -> a) -> (f a -> f b)を実装すればOKらしい。はっきり言って微妙。
+
+----
+
+  FRPが面白い。パラメーター同士の関係を記述して、時間が進められた時に計算される。a <- b, b <- c, c <- aとすると、時間が進んだ時に回転する。NetwireやYampaではArrowを使って実現されている。
+
+  これはExcelと似た形式。
+
+----
+
+ Haskellでmoduleを第一級オブジェクトとして扱えるようにすれば単純にオブジェクト指向プログラミングを実現できそう。
+
+----
+
+ ekmettという人がすごい。lens,category-extras,scalazなどの大きなプロジェクトを大量に手掛けている。
+
+ lensはアクセサを実現する。
+
+ Data.Functor.Contravariant.Divisibleによると実はApplcativeのpure,returnは
+
+ return' :: (() -> a) -> f a
+
+ という型らしい。それを省略しているらしい。contravariantの場合では、
+
+ conquer' :: (a -> ()) -> f a
+
+ となるらしい。
+
+ return' f = return $ f ()
+ return a = return' $ const a　:: a -> f a
+
+ conquer' f = conquer
+ conquer = conquer' $ const () :: f a
+
+ よって、二つの定義は同値。

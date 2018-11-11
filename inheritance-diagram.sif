@@ -1,0 +1,114 @@
+type ex unitype
+
+type ex nullitype
+
+type ex dutype
+
+type ex tritype
+
+
+
+unitype ex wrapper
+
+unitype ex unwrapper
+
+wrapper ex identity
+unwrapper ex identity
+
+
+
+unitype ex conquer
+
+unitype ex unquer
+
+conquer ex contity
+unquer ex contity
+
+
+
+unitype ex invariant
+
+invariant ex functor
+
+invariant ex contravariant
+
+functor ex nonvariant
+contravariant ex nonvariant
+
+
+
+wrapper ex pointed
+functor ex pointed
+
+functor ex apply
+
+pointed ex applicative
+apply ex applicative
+
+apply ex bind
+
+applicative ex monad
+bind ex monad
+
+
+
+unwrapper ex copointed
+functor ex copointed
+
+functor ex coapply
+
+copointed ex extract
+coapply ex extract
+
+coapply ex extend
+
+extract ex comonad
+extend ex comonad
+
+
+
+conquer ex contrapointed
+contravariant ex contrapointed
+
+contravariant ex divide
+
+contrapointed ex divisible
+divide ex divisible
+
+
+
+unquer ex untrapointed
+contravariant ex untrapointed
+
+contravariant ex codivide
+
+untrapointed ex codivisible
+codivide ex codivisible
+
+
+
+functor co functor
+wrapper co unwrapper
+apply co coapply
+pointed co copointed
+bind co extend
+applicative co extract
+monad co comonad
+
+contravariant co contravariant
+conquer co unquer
+divide co codivide
+contrapointed co untrapointed
+divisible co codivisible
+
+functor contra contravariant
+
+wrapper contra conquer
+apply contra divide
+pointed contra contrapointed
+applicative contra divisible
+
+unwrapper contra unquer
+coapply contra codivide
+copointed contra untrapointed
+extract contra codivisible
